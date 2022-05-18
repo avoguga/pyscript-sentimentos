@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <title>Sentiment Analysis</title>
+    <link rel="stylesheet" href="style.css">
+    <py-env>
+        - textblob
+    </py-env>
+  </head>
+  <body>
+      <div id="myContainer">
+        <div id="mainDiv">
+            <div>
+                <h1 id="title">Digite a frase a ser analisada: </h1>
+            </div>
+            <br>
+            <input type="text" id="myInput">
+            <br>
+            <br>
+            <button id="myButton" type="submit" pys-onclick="catch_text">Analisar texto</button>
+            <br>
+            <div id="myText"></div>
+        </div>
+      </div>
+ 
+
+    <py-script>
+    from textblob import TextBlob 
+
+    def detects_feeling(current_feeling, texto, dados):
+        for i in dados[current_feeling]:
+            if texto.find(i) != -1:
+                return current_feeling
+
+        return ''
+  
+    
+
+    def catch_text(*ags, **kws):
+        textInput = Element("myInput").element
+        text = textInput.value
+        feelingText = TextBlob(textInput.value)
+
+        # Sentimentos dentro de um dicionario
+        dados = {
+            'tristeza':['sad', 'cry', 'cryed', 'choro', 'melancolia', 'melancólico', 'deprimido', 'mal'],
+            'alegria':['happy', 'feliz', 'felicidade', 'amor', 'boa', 'contente', 'próspero', 'abençoado', 'amar', 'bem'],
+            'raiva':['raiva', 'irritação', 'cólera', 'ira', 'fúria', 'zangado', 'desprazer', 'ódio', 'odeia']
+        }
+        
+        feelings = list()
+
+        for feeling in dados:
+            current_feeling = detects_feeling(feeling, text, dados)
+    
+            if len(current_feeling) > 0:
+                feelings.append(current_feeling)
+    
+        if feelingText.sentiment.polarity > 0 and len(feelings) > 0:
+            Element('myText').element.innerText = "Os sentimentos detectados foram positivos! Detectou-se " + "".join(feelings)
+        elif feelingText.sentiment.polarity < 0 and len(feelings) > 0:
+            Element('myText').element.innerText = "Os sentimentos detectados foram negativos! Detectou-se " + "".join(feelings)
+        else:
+            Element('myText').element.innerText = "Nenhum sentimento foi detectado"
+
+    </py-script>
+  </body>
+</html>
